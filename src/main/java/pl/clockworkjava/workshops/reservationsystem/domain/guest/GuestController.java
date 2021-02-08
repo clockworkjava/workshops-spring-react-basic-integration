@@ -1,9 +1,13 @@
 package pl.clockworkjava.workshops.reservationsystem.domain.guest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -30,6 +34,7 @@ public class GuestController {
 
     // POST /api/guests - stwórz gosica
     @PostMapping("/guests")
+    @ResponseStatus(HttpStatus.CREATED)
     public void createGuest(@RequestBody Guest guest) {
         guestService.createNewGuest(guest);
     }
@@ -42,8 +47,20 @@ public class GuestController {
 
     // PUT /api/guests/1 - zaktualizuj badz utworz goscia o id 1
     @PutMapping("/guests/{id}")
-    public void updateGuest(@PathVariable Long id, @RequestBody  Guest guest) {
-        this.guestService.updateGuest(id, guest);
+    public ResponseEntity<Void> updateGuest(@PathVariable Long id, @RequestBody  Guest guest) {
+        Long updatedId = this.guestService.fullUpdateGuest(id, guest);
+
+        if(updatedId==id) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.created(URI.create("guests/"+updatedId)).build();
+        }
+    }
+
+    @PatchMapping("/guests/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void patchGuests(@RequestBody Map<String, Object> updates, @PathVariable Long id) {
+        this.guestService.partialUpdate(id, updates);
     }
 
 
