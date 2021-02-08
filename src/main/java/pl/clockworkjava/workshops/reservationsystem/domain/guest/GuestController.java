@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -50,7 +51,7 @@ public class GuestController {
     public ResponseEntity<Void> updateGuest(@PathVariable Long id, @RequestBody  Guest guest) {
         Long updatedId = this.guestService.fullUpdateGuest(id, guest);
 
-        if(updatedId==id) {
+        if(Objects.equals(updatedId, id)) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.created(URI.create("guests/"+updatedId)).build();
